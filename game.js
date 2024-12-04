@@ -12,7 +12,7 @@ $(".btn").click(function()
 });
 
 var level = 0;
-var start = false;
+var started = false;
 
 function playSound(name)
 {
@@ -37,7 +37,6 @@ function checkAnswer(currentLevel)
         console.log("success");
 
         if (userClickedPattern.length === gamePattern.length){
-
             setTimeout(function () {
               nextSequence();
             }, 1000);
@@ -49,48 +48,50 @@ function checkAnswer(currentLevel)
         playSound("wrong");
         $("body").addClass("game-over");
         setTimeout(function()
-    {
-        $("body").removeClass("game-over");
-    },1000);
-        $("h1").text("Press Any Key to Restart.");
+        {
+            $("body").removeClass("game-over");
+        },200);
+        $("#level-title").text("Game Over, Press Any Key to Restart");
+        startOver(); // Call startOver when the game is lost
+        started = false;
     }
-
 }
 
 function startOver()
 {
-    level = 0;
+    level = 0; // Reset level to 0 (which will become 1 in nextSequence)
     gamePattern = [];
+    userClickedPattern = [];
     started = false;
 }
 
 $(document).keypress(function()
 {
-    if(!start)
+    if(!started)
     {
-        $("#level-title").text("Level " + level);
+        // This ensures we start at level 1 when restarting
+        level = 0; 
+        $("#level-title").text("Level " + (level + 1));
         nextSequence();
-        start = true;
+        started = true;
     }
-}
-);
+});
 
 function nextSequence()
 {
-    userClickedPattern=[];
+    userClickedPattern = [];
     level++;
-    $("#level-title").text("Level "+level);
+    $("#level-title").text("Level " + level);
     var randomNumber = Math.floor(Math.random()*4);
     var randomChoosenColour = buttonColours[randomNumber];
     gamePattern.push(randomChoosenColour);
     var className = "."+randomChoosenColour;
 
     $(className).animate({opacity: 0.1}, 100)
-                       .animate({opacity: 1}, 100)
-                       .animate({opacity: 0.1}, 100)
-                       .animate({opacity: 1}, 100);
+                .animate({opacity: 1}, 100)
+                .animate({opacity: 0.1}, 100)
+                .animate({opacity: 1}, 100);
     playSound(randomChoosenColour);
-
 }
 
 function handler(id)
@@ -98,4 +99,3 @@ function handler(id)
     userChoosenColour = id;
     playSound(userChoosenColour);
 }
-
